@@ -4,6 +4,8 @@
 
 //header files for libraries
 
+//for timer stuff
+
 #include <wx/wxprec.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
@@ -27,12 +29,12 @@
 
 //enums
 enum{
-    DEEZ_NUTS = 69
+    REFRESH_TIMER = wxID_HIGHEST + 1
 };
 
 //overriding app to make frame
 
-MyFrame::MyFrame() : wxFrame(NULL, wxID_ANY, "physics sim - Luke Fadel"){
+MyFrame::MyFrame() : wxFrame(NULL, wxID_ANY, "physics sim - Luke Fadel", wxDefaultPosition, wxSize(1920, 1080)){
     canvas = new MyGLCanvas(this);
     context = new MyGLContext(canvas);
 };
@@ -56,41 +58,19 @@ MyGLCanvas::MyGLCanvas(wxWindow *parent) : wxGLCanvas(parent,
         wxDefaultPosition,
         wxDefaultSize,
         wxFULL_REPAINT_ON_RESIZE){
+    
+    engine = new physicsEngine();
+    engine ->addBox(std::make_shared<box>(glm::dvec2(100, 1000), glm::dvec2(10, 10), 10, glm::dvec2(10, 10), glm::fvec4(0.5f, 1.0f, 0.0f, 1.0f)));
+    
+    engine->addBoundary(std::make_shared<boundary>(glm::dvec2(990, 10), glm::dvec2(990, 5)));
+    refreshTimer = new wxTimer(this, REFRESH_TIMER);
+    timeElapsed = new wxStopWatch();
     Bind(wxEVT_PAINT, &OnPaint, this);
-};
-
-void MyGLCanvas::OnPaint(wxPaintEvent & WXUNUSED(event)){
-    //weird macro thing idk
-    wxPaintDC dc (this);
-
-    //getting window size
-    int w, h;
-    GetClientSize(&w, &h);
-    glViewport(0, 0, w, h);
-
-    //reconfiguring projection on resize
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0, w, 0, h, -1, 1);
-
-    //setting to model view for 2d
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    //clearing frames with white colour
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    //setting "pen" colour
-    glColor3f(1.0f, 0.0f, 0.0f);
-
-    //drawing
-    glBegin(GL_LINES);
-        glVertex2f(0, 0);
-        glVertex2f(w, h);
-    glEnd();
-
-    SwapBuffers();
+    Bind(wxEVT_TIMER, &OnRefresh, this, REFRESH_TIMER);
+    Bind(wxEVT_IDLE, &OnIdle, this);
+    timeElapsed->Start();
+    //60hz physics refresh
+    // refreshTimer->Start(16, wxTIMER_CONTINUOUS);
 };
 
 
