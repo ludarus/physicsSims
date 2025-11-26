@@ -13,11 +13,45 @@
 
 
 
+class visualObject{
+    protected:
+        //colour
+        glm::fvec4 colour;
 
+        //position
+        glm::dvec2 d;
+
+        //half extents
+        glm::dvec2 size;
+
+    public: 
+        //only call this function inside of a glBegin block
+        void drawLines(int w, int h){
+            //setting colour
+            glColor4f(colour[0], colour[1], colour[2], colour[3]);
+
+            //scaling 
+            glm::dvec2 sd = d * glm::dvec2(w/1920.0, h/1080.0);
+            glm::dvec2 ss = size * glm::dvec2(w/1920.0, h/1080.0);
+
+            //drawing with position as the center 
+            glVertex2d(sd.x - ss.x, sd.y - ss.y);
+            glVertex2d(sd.x - ss.x, sd.y + ss.y);
+
+            glVertex2d(sd.x - ss.x, sd.y + ss.y);
+            glVertex2d(sd.x + ss.x, sd.y + ss.y);
+
+            glVertex2d(sd.x + ss.x, sd.y + ss.y);
+            glVertex2d(sd.x + ss.x, sd.y - ss.y);
+
+            glVertex2d(sd.x + ss.x, sd.y - ss.y);
+            glVertex2d(sd.x - ss.x, sd.y - ss.y);
+        }
+};
 
 //probably make this extend object or something 
 //update: not very useful to make it a child
-class box{
+class box : public visualObject{
     public:
         //constructors
         box(glm::dvec2 pos, glm::dvec2 siz, double mass, glm::dvec2 vi = glm::dvec2(0,0), glm::fvec4 col = glm::fvec4(0.0f, 0.0f, 1.0f, 1.0f)){
@@ -40,30 +74,10 @@ class box{
             //changing distance based on veloicty 
             transform(glm::dvec2(v.x * (dt/1000000.0), v.y * (dt/1000000.0)));
         }
-        //only call this function inside of a glBegin block
-        void drawLines(int w, int h){
-            glColor4f(colour[0], colour[1], colour[2], colour[3]);
-            //drawing with position as the center 
-            glVertex2d(d.x - size.x, d.y - size.y);
-            glVertex2d(d.x - size.x, d.y + size.y);
-
-            glVertex2d(d.x - size.x, d.y + size.y);
-            glVertex2d(d.x + size.x, d.y + size.y);
-
-            glVertex2d(d.x + size.x, d.y + size.y);
-            glVertex2d(d.x + size.x, d.y - size.y);
-
-            glVertex2d(d.x + size.x, d.y - size.y);
-            glVertex2d(d.x - size.x, d.y - size.y);
-        }
+        
     private:
         //data members
 
-        //position
-        glm::dvec2 d;
-
-        //half extents
-        glm::dvec2 size;
 
         //velocity
         glm::dvec2 v;
@@ -71,43 +85,16 @@ class box{
         //mass
         double m;
 
-        //colour
-        glm::fvec4 colour;
-
 };
 
-class boundary{
+class boundary : public visualObject{
     public:
         boundary(glm::dvec2 pos, glm::dvec2 siz, glm::fvec4 col = glm::fvec4(1.0f, 0.0f, 0.0f, 1.0f)){
             d = pos;
             size = siz;
             colour = col;
         }
-        void drawLines(int w, int h){
-            //setting colour
-            glColor4f(colour[0], colour[1], colour[2], colour[3]);
-            //drawing with position as the center 
-            glVertex2d(d.x - size.x, d.y - size.y);
-            glVertex2d(d.x - size.x, d.y + size.y);
-
-            glVertex2d(d.x - size.x, d.y + size.y);
-            glVertex2d(d.x + size.x, d.y + size.y);
-
-            glVertex2d(d.x + size.x, d.y + size.y);
-            glVertex2d(d.x + size.x, d.y - size.y);
-
-            glVertex2d(d.x + size.x, d.y - size.y);
-            glVertex2d(d.x - size.x, d.y - size.y);
-        }
-    private:
-        //position
-        glm::dvec2 d;
-
-        //half extents
-        glm::dvec2 size;
-
-        glm::fvec4 colour;
-};
+ };
 
 class physicsEngine{
     public:
