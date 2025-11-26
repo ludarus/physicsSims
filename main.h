@@ -10,7 +10,22 @@
 #include <iostream>
 
 
+struct force{
+    glm::dvec2 F;
+    int type;
+    /*
+    Force ids:
+    0 = gravity
+    1 = contact forces
+    */
 
+    public:
+        //constructor
+        force(int id, glm::dvec2 f = glm::dvec2(0, 0)){
+            type = id;
+            F = f;
+        }
+};
 
 
 class visualObject{
@@ -54,30 +69,43 @@ class visualObject{
 class box : public visualObject{
     public:
         //constructors
-        box(glm::dvec2 pos, glm::dvec2 siz, double mass, glm::dvec2 vi = glm::dvec2(0,0), glm::fvec4 col = glm::fvec4(0.0f, 0.0f, 1.0f, 1.0f)){
+        box(glm::dvec2 pos, glm::dvec2 siz, double mass, double g, glm::dvec2 vi = glm::dvec2(0,0), glm::fvec4 col = glm::fvec4(0.0f, 0.0f, 1.0f, 1.0f)){
             d = pos;
             size = siz;
             m = mass;
             v = vi;
             colour = col;
+            forces.push_back( force(0, glm::dvec2(0, g * m)) );
         }
 
         void transform(glm::dvec2 transformation){
             d += transformation;
         }
 
+        void updateMovement(long dt){
+            glm::dvec2 a = glm::dvec2(0,0);
 
-        void updateMovement(long dt, double a){
+            //calculating net force
+            for (force f : forces){
+                a += f.F;
+            }
+
+            //f = ma; a = f/m
+            a /= m;
+
+            std::cout<<a.x<<", "<<a.y<<std::endl;
+
             //changing velocity based on acceleration
-            v += glm::dvec2(0, a * (dt/1000000.0));  
+            v += a * (dt/1000000.0);
 
             //changing distance based on veloicty 
             transform(glm::dvec2(v.x * (dt/1000000.0), v.y * (dt/1000000.0)));
         }
-        
+
     private:
         //data members
 
+        std::vector<force> forces;
 
         //velocity
         glm::dvec2 v;
@@ -102,9 +130,12 @@ class physicsEngine{
 
         };
 
+        const double g = -9.81;
+
         void compute(long dt){
+            //updating movement and forces
             for (std::shared_ptr<box> b : boxes){
-                b.get()->updateMovement(dt, g);
+                b.get()->updateMovement(dt);
             }
         }
 
@@ -128,7 +159,6 @@ class physicsEngine{
             boundaries.push_back(b);
         }
     private:
-        const double g = -9.81;
 
         std::vector<std::shared_ptr<box>> boxes;
         std::vector<std::shared_ptr<boundary>> boundaries;
@@ -195,7 +225,6 @@ class MyGLCanvas : public wxGLCanvas{
         //updates screen on idle
         void OnIdle(wxIdleEvent& event){
             dt = (timeElapsed->TimeInMicro() - previousTime).GetValue();
-            std::cout<<dt/1000.0<<std::endl;
             engine->compute(dt);
             Refresh(false);
             previousTime = timeElapsed->TimeInMicro();
