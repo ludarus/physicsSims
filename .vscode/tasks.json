@@ -8,7 +8,7 @@
       "args": [
         "-mingw64","-defterm","-here","-no-start","-c",
         {
-          "value": "g++ /c/Users/burge/Documents/Personal-Projects/physicsSims/${fileBasenameNoExtension}.cpp $(wx-config --cxxflags --libs --gl-libs) -lopengl32 -lglu32 -lgdi32 -lwx_mswu_propgrid-3.2 -o /c/Users/burge/Documents/Personal-Projects/physicsSims/${fileBasenameNoExtension}.exe",
+          "value": "g++ /c/Users/burge/Documents/Personal-Projects/physicsSims/main.cpp $(wx-config --cxxflags --libs --gl-libs) -lopengl32 -lglu32 -lgdi32 -lwx_mswu_propgrid-3.2 -o /c/Users/burge/Documents/Personal-Projects/physicsSims/main.exe",
           "quoting": "escape"
         }
       ],
@@ -22,7 +22,7 @@
       "args": [
         "-mingw64","-defterm","-here","-no-start","-c",
         {
-          "value": "/c/Users/burge/Documents/Personal-Projects/physicsSims/${fileBasenameNoExtension}.exe",
+          "value": "/c/Users/burge/Documents/Personal-Projects/physicsSims/main.exe",
           "quoting": "escape"
         }
       ],

@@ -1,10 +1,10 @@
+#pragma once
+
 #include <glm/glm.hpp>
 
 //wxwidgets and opengl
 #include "wx/glcanvas.h"
 #define GLM_ENABLE_EXPERIMENTAL
-
-
 
 class visualObject{
     protected:

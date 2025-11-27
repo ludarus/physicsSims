@@ -23,7 +23,7 @@ class physicsEngine{
                         //if one of the points are in bounds, then collide
                         if ((point.y > bo.get()->getBottomLeft().y && point.y < bo.get()->getTopRight().y) && ((point.x > bo.get()->getBottomLeft().x && point.x < bo.get()->getTopRight().x))){
                             //apply force 
-
+                            std::cout<<"colliding"<<std::endl;
                             break;
                         }
 
