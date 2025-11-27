@@ -14,8 +14,8 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif
-#include "main.h"
-#include "MyFrame.h"
+#include "include/MyApp.h"
+#include "include/MyFrame.h"
 
 
 //stupid macro

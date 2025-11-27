@@ -4,6 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/include/**",
                 "C:/Users/burge/vcpkg/installed/x64-windows/include",
                 "C:/msys64/mingw64/include/wx-3.2/",
                 "C:/Users/burge/vcpkg/installed/x64-windows/lib"
@@ -14,7 +15,6 @@
                 "_UNICODE",
                 "__WXMSW__",
                 "wxUSE_UNICODE"
-
             ],
             "windowsSdkVersion": "10.0.26100.0",
             "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
