@@ -63,6 +63,7 @@ MyGLCanvas::MyGLCanvas(wxWindow *parent) : wxGLCanvas(parent,
     engine ->addBox(std::make_shared<box>(glm::dvec2(100, 1000), glm::dvec2(10, 10), 10, engine->g, glm::dvec2(10, 0), glm::fvec4(0.0f, 0.0f, 0.0f, 1.0f)));
     
     engine->addBoundary(std::make_shared<boundary>(glm::dvec2(965, 15), glm::dvec2(940, 5)));
+
     refreshTimer = new wxTimer(this, REFRESH_TIMER);
     timeElapsed = new wxStopWatch();
     Bind(wxEVT_PAINT, &OnPaint, this);
