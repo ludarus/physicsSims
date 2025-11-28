@@ -3,6 +3,7 @@
 #include "wx/glcanvas.h"
 #include "physicsEngine.h"
 #include "enums.h"
+#include <cmath>
 
 class MyGLCanvas : public wxGLCanvas{
     public:
@@ -21,7 +22,7 @@ class MyGLCanvas : public wxGLCanvas{
         wxFULL_REPAINT_ON_RESIZE){
 
             engine = new physicsEngine();
-            engine->addBox(std::make_shared<box>(glm::dvec2(100, 1000), glm::dvec2(10, 10), 10, engine->g, glm::dvec2(10, 0), glm::fvec4(0.0f, 0.0f, 0.0f, 1.0f)));
+            engine->addBox(std::make_shared<box>(glm::dvec2(100, 1000), glm::dvec2(10, 40), 10, engine->g,  M_PI, glm::dvec2(0, 0), 0, glm::fvec4(0.0f, 0.0f, 0.0f, 1.0f)));
 
             engine->addBoundary(std::make_shared<boundary>(glm::dvec2(965, 15), glm::dvec2(940, 5)));
 
