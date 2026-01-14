@@ -16,29 +16,56 @@ class visualObject{
 
         //half extents
         glm::dvec2 size;
+        //angle
+        double θ;
+        
+        std::array<glm::dvec2, 4> points;
+
+        double hyp;
+
 
     public: 
+        
+        double getHyp(){
+            return hyp;
+        }
+        
         //only call this function inside of a glBegin block
-        void drawLines(int w, int h){
-            //setting colour
+        // this was very painful to make
+        void drawLines(int w, int h)
+        {
+            glm::dvec2 scale = glm::dvec2(w / 1920.0, h / 1080.0);
+
+            double Δx1 = size.x * cos(θ);
+            double Δy1 = size.x * sin(θ);
+
+            double Δx2 = size.y * sin(θ);
+            double Δy2 = size.y * cos(θ);
+
+            points =
+                {
+                    // top right                                    //scaling 🤮
+                    glm::dvec2(d.x + Δx1 + Δx2, d.y - Δy1 + Δy2) * scale,
+                    // bottom right
+                    glm::dvec2(d.x + Δx1 - Δx2, d.y - Δy1 - Δy2) * scale,
+                    // bottom left
+                    glm::dvec2(d.x - Δx1 - Δx2, d.y + Δy1 - Δy2) * scale,
+                    // top  left
+                    glm::dvec2(d.x - Δx1 + Δx2, d.y + Δy1 + Δy2) * scale};
+
             glColor4f(colour[0], colour[1], colour[2], colour[3]);
 
-            //scaling 
-            glm::dvec2 sd = d * glm::dvec2(w/1920.0, h/1080.0);
-            glm::dvec2 ss = size * glm::dvec2(w/1920.0, h/1080.0);
+            glVertex2d(points[0].x, points[0].y);
+            glVertex2d(points[1].x, points[1].y);
 
-            //drawing with position as the center 
-            glVertex2d(sd.x - ss.x, sd.y - ss.y);
-            glVertex2d(sd.x - ss.x, sd.y + ss.y);
+            glVertex2d(points[1].x, points[1].y);
+            glVertex2d(points[2].x, points[2].y);
 
-            glVertex2d(sd.x - ss.x, sd.y + ss.y);
-            glVertex2d(sd.x + ss.x, sd.y + ss.y);
+            glVertex2d(points[2].x, points[2].y);
+            glVertex2d(points[3].x, points[3].y);
 
-            glVertex2d(sd.x + ss.x, sd.y + ss.y);
-            glVertex2d(sd.x + ss.x, sd.y - ss.y);
-
-            glVertex2d(sd.x + ss.x, sd.y - ss.y);
-            glVertex2d(sd.x - ss.x, sd.y - ss.y);
+            glVertex2d(points[3].x, points[3].y);
+            glVertex2d(points[0].x, points[0].y);
         }
         glm::dvec2 getSize(){
             return size;
@@ -48,7 +75,7 @@ class visualObject{
             return d;
         }
 
-        std::array<glm::dvec2, 4> getBounds(){
-            return {glm::dvec2(d + size), glm::dvec2(d.x + size.x, d.y - size.y), glm::dvec2(d - size), glm::dvec2(d.x - size.x, d.y + size.y) };
+        std::array<glm::dvec2, 4> getPoints(){
+            return points;
         }
 };

@@ -22,9 +22,9 @@ class MyGLCanvas : public wxGLCanvas{
         wxFULL_REPAINT_ON_RESIZE){
 
             engine = new physicsEngine();
-            engine->addBox(std::make_shared<box>(glm::dvec2(100, 1000), glm::dvec2(10, 40), 10, engine->g,  M_PI, glm::dvec2(0, 0), 0, glm::fvec4(0.0f, 0.0f, 0.0f, 1.0f)));
+            engine->addBox(std::make_shared<box>(glm::dvec2(1920/2, 1080/2), glm::dvec2(20, 20), 10));
 
-            engine->addBoundary(std::make_shared<boundary>(glm::dvec2(965, 15), glm::dvec2(940, 5)));
+            engine->addBoundary(std::make_shared<boundary>(glm::dvec2(965, 15), glm::dvec2(940, 5), 0));
 
             refreshTimer = new wxTimer(this, REFRESH_TIMER);
             timeElapsed = new wxStopWatch();

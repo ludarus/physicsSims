@@ -11,64 +11,31 @@
 class box : public visualObject{
     public:
         //constructors
-        box(glm::dvec2 pos, glm::dvec2 siz, double mass, double g, double angle = 0, glm::dvec2 vi = glm::dvec2(0,0), double av = 0, glm::fvec4 col = glm::fvec4(0.0f, 0.0f, 1.0f, 1.0f)){
+        box(glm::dvec2 pos, glm::dvec2 siz, double mass, double grav = -9.81, double angle = 0, glm::dvec2 vi = glm::dvec2(0,0), double av = 0, glm::fvec4 col = glm::fvec4(0.0f, 0.0f, 1.0f, 1.0f)){
             d = pos;
             size = siz;
             m = mass;
             v = vi;
             colour = col;
-            θ = angle;
+            θ = angle * (M_PI/180.0);
             w = av;
+            g = glm::dvec2(0, grav * m);
 
             //moment of inertia formula (for a rectangle): 
             I = (1.0/12.0) * m * (pow(size.x * 2, 2) + pow(size.y * 2, 2));
             std::cout<<I<<std::endl;
 
-            //internal angle to corner
-            shapeInfo[1] = atan(size.y/size.x);
-            //hypotenuse
-            shapeInfo[0] = sqrt( pow(size.y, 2) + pow(size.x, 2) );
-            
             // forces.push_back( force(0, glm::dvec2(0, g * m)) );
-            torques.push_back(200);
+            //hypotenuse
+            hyp = sqrt((size.x * size.x) + (size.y * size.y));
+            //adding force 
+            Fnet = glm::dvec2(0,0);
+            // torques.push_back(200);
         }
 
 
         //overriding draw function for rotation
-        //this was very painful to make
-        void drawLines(int w, int h){
-            double Δx1 = size.x * cos(θ);
-            double Δy1 = size.x * sin(θ);
-
-            double Δx2 = size.y * sin(θ);
-            double Δy2 = size.y * cos(θ);
-
-            std::array<glm::dvec2, 4> points = 
-            {
-                //top right
-                glm::dvec2( d.x + Δx1 + Δx2 , d.y - Δy1 + Δy2),
-                //bottom right
-                glm::dvec2( d.x + Δx1 - Δx2 , d.y - Δy1 - Δy2),
-                //bottom left
-                glm::dvec2( d.x - Δx1 - Δx2 , d.y + Δy1 - Δy2),
-                //top  left
-                glm::dvec2( d.x - Δx1 + Δx2 , d.y + Δy1 + Δy2)
-            };
-
-            glColor4f(colour[0], colour[1], colour[2], colour[3]);
-
-            glVertex2d(points[0].x, points[0].y);
-            glVertex2d(points[1].x, points[1].y);
-
-            glVertex2d(points[1].x, points[1].y);
-            glVertex2d(points[2].x, points[2].y);
-
-            glVertex2d(points[2].x, points[2].y);
-            glVertex2d(points[3].x, points[3].y);
-
-            glVertex2d(points[3].x, points[3].y);
-            glVertex2d(points[0].x, points[0].y);
-        }
+        
 
         void transform(glm::dvec2 transformation){
             d += transformation;
@@ -78,18 +45,30 @@ class box : public visualObject{
             θ += angle;
         }
 
-        void updateMovement(long dt){
-            //calculating accelearation
-            glm::dvec2 a = glm::dvec2(0,0);
+        glm::dvec2 getFnet(){
+            return Fnet;
+        }
 
+        void applyForce(force f){
+            forces.push_back(f);
+        }
+
+        void setV0(){
+            v = glm::dvec2(0,0);
+        }
+
+        void updateMovement(long dt){
+            forces.push_back( force(0, g ));
+            //calculating accelearation
+            Fnet = glm::dvec2(0,0);
             //calculating net force
             for (force f : forces){
-                a += f.F;
+                Fnet += f.F;
             }
-
             //f = ma; a = f/m
-            a /= m;
-
+            glm::dvec2 a = Fnet / m;
+            // std::cout<<a.y<<std::endl;
+            forces.clear();
             //calcualting angular acceleartaion
             double α = 0.0;
 
@@ -120,8 +99,7 @@ class box : public visualObject{
 
         std::vector<double> torques;
 
-        //angle
-        double θ;
+        glm::dvec2 Fnet;
 
         //velocity
         glm::dvec2 v;
@@ -135,8 +113,8 @@ class box : public visualObject{
         //mass
         double m;
 
-        //for rotation:
-        std::array<double, 2> shapeInfo;
+        //gravity force
+        glm::dvec2 g;
 
 };
 

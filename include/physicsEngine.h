@@ -3,6 +3,7 @@
 
 #include "box.h"
 #include "boundary.h"
+#include "functions.h"
 
 class physicsEngine{
     public:
@@ -13,20 +14,24 @@ class physicsEngine{
         const double g = -9.81;
 
         void compute(long dt){
-            
             //updating movement and forces
             for (std::shared_ptr<box> b : boxes){
                 // collisions
                 for (std::shared_ptr<boundary> bo : boundaries){
-                    //iterate thru all the points (nessesary for rotationgal stuf)
-                    for (glm::dvec2 point : b.get()->getBounds()){
-                        //if one of the points are in bounds, then collide
-                        if ((point.y > bo.get()->getBottomLeft().y && point.y < bo.get()->getTopRight().y) && ((point.x > bo.get()->getBottomLeft().x && point.x < bo.get()->getTopRight().x))){
-                            //apply force 
-                            std::cout<<"colliding"<<std::endl;
+                    //basic test to see if in range to collide
+                    if(dist(b.get()->getPos(), bo.get()->getPos()) < b.get()->getHyp() + bo.get()->getHyp()){
+                        // std::cout<<"in range"<<std::endl;
+                        //using sat to see if the things are colliding
+                        if (SATcollide(b.get()->getPoints(), bo.get()->getPoints())){
+                            //apply force in direction of boundary surface 
+                            // std::cout<<b.get()->getFnet().y<<std::endl;
+                            //getting fnet, and applying the opposite to the object
+                            // b.get()->applyForce(force(1 , glm::dvec2(0, 1000)));
+
+                            b.get()->applyForce(force(1, abs(b.get()->getFnet())));
+                            b.get()->setV0();
                             break;
                         }
-
                     }
                 }
                 b.get()->updateMovement(dt);
